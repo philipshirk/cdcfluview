@@ -55,6 +55,10 @@ hospitalizations <- function(surveillance_area=c("flusurv"),
   race_df <- race_df[(race_df$variable == "Race" | race_df$value_id == 0) & !is.na(race_df$value_id),]
   race_df <- setNames(race_df[,c("value_id", "label")], c("raceid", "race_label"))
 
+  sex_df <- setNames(hosp$meta$master_lookup, c("variable", "value_id", "parent_id", "label", "color", "enabled"))
+  sex_df <- sex_df[(sex_df$variable == "Sex" | sex_df$value_id == 0) & !is.na(sex_df$value_id),]
+  sex_df <- setNames(sex_df[,c("value_id", "label")], c("sexid", "sex_label"))
+  
   season_df <- setNames(
     hosp$meta$seasons,
     c("season_description", "season_enabled", "season_endweek", "season_label", "seasonid", "season_startweek", "include_weekly")
@@ -84,6 +88,7 @@ hospitalizations <- function(surveillance_area=c("flusurv"),
 
   xdf <- dplyr::left_join(xdf, age_df, "ageid")
   xdf <- dplyr::left_join(xdf, race_df, "raceid")
+  xdf <- dplyr::left_join(xdf, sex_df,  "sexid")
   xdf <- dplyr::left_join(xdf, season_df, "seasonid")
 
   xdf$catchmentid <- as.character(xdf$catchmentid)
@@ -131,22 +136,26 @@ hospitalizations <- function(surveillance_area=c("flusurv"),
                    age = ageid,
                    sea_label = season_label,
                    sea_description = season_description) %>% 
-     dplyr::select(
-        surveillance_area,
-        region,
-        year,
-        season,
-        wk_start, 
-        wk_end,
-        year_wk_num,
-        rate,
-        weeklyrate,
-        age,
-        age_label,
-        sea_label,
-        sea_description,
-        mmwrid
-     )
+    dplyr::select(
+      surveillance_area,
+      region,
+      year,
+      season,
+      wk_start,
+      wk_end,
+      year_wk_num,
+      rate,
+      weeklyrate,
+      age,
+      age_label,
+      sexid, 
+      sex_label,
+      raceid, 
+      race_label,
+      sea_label,
+      sea_description,
+      mmwrid
+    )
 }
 
 #' Retrieve a list of valid sub-regions for each surveillance area.
