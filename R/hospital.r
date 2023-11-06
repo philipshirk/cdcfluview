@@ -122,8 +122,31 @@ hospitalizations <- function(surveillance_area=c("flusurv"),
 
   }
 
-  xdf
-
+  # return same columns as previous version of this function
+  xdf %>% 
+     dplyr::mutate(season = seasonid,
+                   wk_start = as.Date(weekstart),
+                   wk_end = as.Date(weekend),
+                   year_wk_num = weeknumber,
+                   age = ageid,
+                   sea_label = season_label,
+                   sea_description = season_description) %>% 
+     dplyr::select(
+        surveillance_area,
+        region,
+        year,
+        season,
+        wk_start, 
+        wk_end,
+        year_wk_num,
+        rate,
+        weeklyrate,
+        age,
+        age_label,
+        sea_label,
+        sea_description,
+        mmwrid
+     )
 }
 
 #' Retrieve a list of valid sub-regions for each surveillance area.
