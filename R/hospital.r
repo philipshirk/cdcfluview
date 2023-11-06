@@ -22,10 +22,10 @@
 #' hosp_eip <- hospitalizations("eip")
 #' hosp_ihsp <- hospitalizations("ihsp")
 #' }
-hospitalizations <- function(surveillance_area=c("flusurv", "eip", "ihsp"),
+hospitalizations <- function(surveillance_area=c("flusurv"),
                              region="all", years=NULL) {
 
-  sarea <- match.arg(tolower(surveillance_area), choices = c("flusurv", "eip", "ihsp"))
+  sarea <- match.arg(tolower(surveillance_area), choices = c("flusurv"))
   sarea <- .surv_rev_map[sarea]
 
   meta <- .get_meta()
@@ -44,7 +44,7 @@ hospitalizations <- function(surveillance_area=c("flusurv", "eip", "ihsp"),
          call.=FALSE)
   }
 
-  hosp <- list(res = res$default_data, meta = meta)
+  hosp <- list(res = meta$default_data, meta = meta)
 
   age_df <- setNames(hosp$meta$master_lookup, c("variable", "value_id", "parent_id", "label", "color", "enabled"))
   age_df <- age_df[(age_df$variable == "Age" | age_df$value_id == 0) & !is.na(age_df$value_id),]
@@ -88,8 +88,8 @@ hospitalizations <- function(surveillance_area=c("flusurv", "eip", "ihsp"),
 
   xdf$catchmentid <- as.character(xdf$catchmentid)
   catchments_df$catchmentid <- as.character(catchments_df$catchmentid)
-  catchments_df$networkid <- NULL
-  xdf <- dplyr::left_join(xdf, catchments_df, "catchmentid")
+  # modify: add "networkid" to the join
+  xdf <- dplyr::left_join(x = xdf, y = catchments_df, by = c("networkid", "catchmentid"))
 
   xdf$surveillance_area <- sarea
   xdf$region <- reg
