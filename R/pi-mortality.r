@@ -60,6 +60,8 @@ pi_mortality <- function(coverage_area=c("national", "state", "region"), years=N
   meta <- jsonlite::fromJSON("https://gis.cdc.gov/grasp/flu7/GetPhase07InitApp?appVersion=Public")
 
   mapcode_df <- setNames(meta$nchs_mapcode[,c("mapcode", "description")], c("map_code", "callout"))
+  # remove duplicates from the dataset
+  mapcode_df <- mapcode_df[!duplicated(mapcode_df),]
   mapcode_df$map_code <- as.character(mapcode_df$map_code)
 
   geo_df <- meta$nchs_geo_dim
